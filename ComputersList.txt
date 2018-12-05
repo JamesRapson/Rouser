@@ -1,1 +1,4 @@
 01739b32-dc65-499a-ac28-dc9fc7ef0d8f	RNDev14	JamesR's computer		F0-92-1C-F0-DE-29	192.168.125.132
+46aebdf3-da8d-443a-9f23-d79f0c936e94	RNDEV14	james.rapson's computer	james.rapson	F0:92:1C:F0:DE:29	192.168.125.132
+66102b57-6379-4aae-9d7c-8082843a95d8	RNDEV14	@{Description=James Z230}	james.rapson	F0:92:1C:F0:DE:29	192.168.125.132
+ac3d3fec-7421-4c5c-89a4-0ab64efc7d8a	RNDEV14	James Z230	james.rapson	F0:92:1C:F0:DE:29	192.168.125.132

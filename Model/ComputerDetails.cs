@@ -96,5 +96,18 @@ namespace Rouser.Model
                 ipAddress : parts[5]
             );
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is ComputerDetails comp)
+            {
+                return comp.Name == Name &&
+                       comp.Description == Description &&
+                       comp.IPAddress == IPAddress &&
+                       comp.MacAddress == MacAddress &&
+                       comp.User == User;
+            }
+            return base.Equals(obj);
+        }
     }
 }

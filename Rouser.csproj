@@ -24,11 +24,11 @@
 
   <ItemGroup>
     <None Remove="ClientApp\src\App.tsx" />
-    <None Remove="ClientApp\src\components\About.tsx" />
     <None Remove="ClientApp\src\components\ComputerWake.tsx" />
     <None Remove="ClientApp\src\components\Layout.tsx" />
     <None Remove="ClientApp\src\components\NavMenu.tsx" />
     <None Remove="ClientApp\src\components\RouserTypes.ts" />
+    <None Remove="ClientApp\src\components\Scripts.tsx" />
     <None Remove="ClientApp\src\index.tsx" />
     <None Remove="ClientApp\src\registerServiceWorker.js" />
   </ItemGroup>
@@ -36,7 +36,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\App.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\ComputerWake.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\components\About.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\Scripts.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\Layout.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\NavMenu.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\RouserTypes.ts" />

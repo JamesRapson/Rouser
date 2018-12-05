@@ -33,6 +33,11 @@ namespace Rouser.Model
             if (!string.IsNullOrWhiteSpace(computer.Id))
                 throw new Exception("Id must NOT be specified");
 
+            // Check if identical computer record already exists
+            ComputerDetails existing = _computersList.FirstOrDefault(comp => comp.Equals(computer));
+            if (existing != null)
+                return existing;
+                
             ComputerDetails newComp = new ComputerDetails( Guid.NewGuid().ToString(), computer );
             _computersList.Add(newComp);
             WriteComputersList();

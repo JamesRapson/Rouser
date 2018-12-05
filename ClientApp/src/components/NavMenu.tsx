@@ -22,9 +22,9 @@ export class NavMenu extends React.Component<any, any> {
                     <Glyphicon glyph="th-list" /> Computer Wake
                 </NavItem>
             </LinkContainer>
-            <LinkContainer to={"/about"} exact>
+            <LinkContainer to={"/scripts"} exact>
               <NavItem>
-                  <Glyphicon glyph="info-sign" /> About
+                  <Glyphicon glyph="info-sign" /> Scripts
               </NavItem>
             </LinkContainer>
         </Nav>
