@@ -5,7 +5,7 @@ using Rouser.Model;
 
 namespace Rouser
 {
-    public class WOLSender
+    public static class WOLSender
     {
         public static void Send(string macAddress, string ipAddress, string subnetMask)
         {

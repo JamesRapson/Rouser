@@ -6,6 +6,9 @@ using MoreLinq;
 
 namespace Rouser.Model
 {
+    /// <summary>
+    /// Represents the details of a computer's network adapter that we need into order to send WOL
+    /// </summary>
     public class NetworkAdapterDetails
     {
         public NetworkAdapterDetails()
@@ -41,6 +44,12 @@ namespace Rouser.Model
             get; set;
         }
 
+        /// <summary>
+        /// Combines the list of network adapters based on the MAC Address.
+        /// The implementation of this is not 100% correct, also this is just an optimisation that I don't think is adding any real value - consider removing it
+        /// </summary>
+        /// <param name="adapters">The list of adapters to combine</param>
+        /// <returns></returns>
         public static List<NetworkAdapterDetails> CombineAdapters(List<NetworkAdapterDetails> adapters)
         {
             var groupedAdapters = adapters.GroupBy(
@@ -69,6 +78,10 @@ namespace Rouser.Model
             return results;
         }
 
+        /// <summary>
+        /// Checks that the adapters details are correctly formatted such that we have the necessary information to send WOL packets
+        /// </summary>
+        /// <param name="adapters"></param>
         public static void CheckAdapters(List<NetworkAdapterDetails> adapters)
         {
             if (adapters.Count == 0)
@@ -101,6 +114,9 @@ namespace Rouser.Model
         }
     }
 
+    /// <summary>
+    /// Represents the details of a computer
+    /// </summary>
     public class ComputerDetails
     {
         public ComputerDetails()
@@ -139,6 +155,9 @@ namespace Rouser.Model
             get; set;
         }
 
+        /// <summary>
+        /// The set of network adapters on this computer.
+        /// </summary>
         public List<NetworkAdapterDetails> NetworkAdapters
         {
             get; set;

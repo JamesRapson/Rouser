@@ -8,7 +8,7 @@ using Rouser.Model;
 namespace Rouser.Model
 {
     /// <summary>
-    
+    /// Very very simply persistent of the list of computers.
     /// </summary>
     public class ComputerListManager
     {
@@ -51,6 +51,13 @@ namespace Rouser.Model
             return null;
         }
 
+        /// <summary>
+        /// Adds computer record to list or replaces existing record it match is found.
+        /// Match is performed using the Id field if this is specified, otherwise the match is
+        /// performed using the MAC Address(s). 
+        /// </summary>
+        /// <param name="computer"></param>
+        /// <returns></returns>
         public ComputerDetails AddUpdateComputer(ComputerDetails computer)
         {
             if (!string.IsNullOrWhiteSpace(computer.Id))
@@ -80,7 +87,6 @@ namespace Rouser.Model
             return computer;
         }
         
-
         public void Delete(string id)
         {
             _computersList.RemoveAll(x => x.Id == id);
@@ -92,7 +98,12 @@ namespace Rouser.Model
             return _computersList.FirstOrDefault(x => x.Id == id);
         }
         
-
+        /// <summary>
+        /// Returns the list of computer records where any field on the record matches the 
+        /// <paramref name="filterString"/> parameter
+        /// </summary>
+        /// <param name="filterString"></param>
+        /// <returns></returns>
         public ICollection<ComputerDetails> GetByFilter(string filterString = null)
         {
             return _computersList
@@ -128,6 +139,9 @@ namespace Rouser.Model
             File.WriteAllText(ComputersListFile, data);
         }
 
+        /// <summary>
+        /// Returns the full path of the file used to store the list of computer records
+        /// </summary>
         public string ComputersListFile
         {
             get
