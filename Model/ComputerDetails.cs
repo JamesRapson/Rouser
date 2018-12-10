@@ -2,9 +2,105 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using MoreLinq;
 
 namespace Rouser.Model
 {
+    public class NetworkAdapterDetails
+    {
+        public NetworkAdapterDetails()
+        { }
+
+        public NetworkAdapterDetails(NetworkAdapterDetails details)
+        {
+            MacAddress = details.MacAddress;
+            Subnet = details.Subnet;
+            IPAddress = details.IPAddress;
+        }
+
+        public NetworkAdapterDetails(string macAddress, string subnet, string ipAddress)
+        {
+            MacAddress = macAddress;
+            Subnet = subnet;
+            IPAddress = ipAddress;
+        }
+
+
+        public string MacAddress
+        {
+            get; set;
+        }
+
+        public string Subnet
+        {
+            get; set;
+        }
+
+        public string IPAddress
+        {
+            get; set;
+        }
+
+        public static List<NetworkAdapterDetails> CombineAdapters(List<NetworkAdapterDetails> adapters)
+        {
+            var groupedAdapters = adapters.GroupBy(
+                a => a.MacAddress,
+                a => a,
+                (key, g) => new { MACAddress = key, Adapters = g.ToList() });
+
+            var results = new List<NetworkAdapterDetails>();
+            foreach (var group in groupedAdapters)
+            {
+                results.Add(
+                    group.Adapters.Aggregate((current, accumulate) =>
+                    {
+                        if (string.IsNullOrWhiteSpace(accumulate.IPAddress) &&
+                            !string.IsNullOrWhiteSpace(current.IPAddress))
+                            accumulate.IPAddress = current.IPAddress;
+
+                        if (string.IsNullOrWhiteSpace(accumulate.Subnet) &&
+                            !string.IsNullOrWhiteSpace(current.Subnet))
+                            accumulate.Subnet = current.Subnet;
+
+                        return accumulate;
+                    }));
+            }
+
+            return results;
+        }
+
+        public static void CheckAdapters(List<NetworkAdapterDetails> adapters)
+        {
+            if (adapters.Count == 0)
+                throw new Exception($"At least one Network Adapter must be specified.");
+
+            foreach (NetworkAdapterDetails adapter in adapters)
+            {                
+                // Check IP Address
+                if (!string.IsNullOrWhiteSpace(adapter.IPAddress))
+                {
+                    // If there are multiple IPs we are only interested in the ipv4 one
+                    if (!Utils.TryExtractIPv4(adapter.IPAddress, out _))
+                        throw new Exception($"IP Address '{adapter.IPAddress}' is invalid ");    
+                }
+
+                // Check MAC Address
+                if (!string.IsNullOrWhiteSpace(adapter.MacAddress) &&
+                    !MACAddress.TryParse(adapter.MacAddress, out _))
+                {
+                    throw new Exception($"MAC Address '{adapter.MacAddress}' is invalid ");
+                }
+
+                // Check Subnet 
+                if (!string.IsNullOrWhiteSpace(adapter.Subnet))
+                {
+                    if (!Utils.TryExtractIPv4(adapter.Subnet, out _))
+                        throw new Exception($"Subnet '{adapter.Subnet}' is invalid ");
+                }
+            }
+        }
+    }
+
     public class ComputerDetails
     {
         public ComputerDetails()
@@ -18,28 +114,10 @@ namespace Rouser.Model
             Name = computer.Name;
             Description = computer.Description;
             User = computer.User;
-            MacAddress = computer.MacAddress;
-            IPAddress = computer.IPAddress;
+            var adapters= computer.NetworkAdapters.Select(x => new NetworkAdapterDetails(x));
+            NetworkAdapters = new List<NetworkAdapterDetails>(adapters);
         }
-
-        public ComputerDetails(string id, string name, string description, string user, string macAddress, string ipAddress)
-        {
-            Id = id;
-            Name = name;
-            Description = description;
-            User = user;
-            MacAddress = macAddress;
-            IPAddress = ipAddress;
-        }
-
-        public ComputerDetails(string name, string description, string user, string macAddress, string ipAddress)
-        {
-            Name = name;
-            Description = description;
-            User = user;
-            MacAddress = macAddress;
-            IPAddress = ipAddress;
-        }
+       
 
         public string Id
         {
@@ -61,53 +139,9 @@ namespace Rouser.Model
             get; set;
         }
 
-        
-        public string MacAddress
+        public List<NetworkAdapterDetails> NetworkAdapters
         {
             get; set;
-        }
-
-        public string IPAddress
-        {
-            get; set;
-        }
-
-        public void WriteTo( StreamWriter writer )
-        {
-            writer.WriteLine( $"{Id}\t{Name}\t{Description}\t{User}\t{MacAddress}\t{IPAddress}" );
-        }
-
-        public static ComputerDetails ReadFrom( StreamReader reader )
-        {
-            string line = reader.ReadLine();
-            if (line == null)
-                return null;
-            var parts = line.Split( new char[] { '\t' } );
-
-            if ( parts.Length < 5 )
-                return null;
-
-            return new ComputerDetails(
-                id : parts[0],
-                name : parts[1],
-                description : parts[2],
-                user : parts[3],
-                macAddress : parts[4],
-                ipAddress : parts[5]
-            );
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is ComputerDetails comp)
-            {
-                return comp.Name == Name &&
-                       comp.Description == Description &&
-                       comp.IPAddress == IPAddress &&
-                       comp.MacAddress == MacAddress &&
-                       comp.User == User;
-            }
-            return base.Equals(obj);
         }
     }
 }

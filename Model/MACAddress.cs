@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MoreLinq;
 using System.Threading.Tasks;
 
 namespace Rouser.Model
@@ -33,7 +34,15 @@ namespace Rouser.Model
 
         public override string ToString()
         {
-            return string.Join(':', _macAddressBytes.Select(x => x.ToString()));
+            return string.Join('-', _macAddressBytes.Select(x => x.ToString()));
+        }
+
+        public static MACAddress Parse(string str)
+        {
+            if (MACAddress.TryParse(str, out var mac))
+                return mac;
+
+            throw new Exception("Invalid MAC Address");
         }
 
         public static bool TryParse(string str, out MACAddress macAddress)
@@ -58,6 +67,15 @@ namespace Rouser.Model
             {
                 return false;
             }
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is MACAddress mac)
+            {
+                return mac.ToString() == ToString();
+            }
+            return base.Equals(obj);
         }
     }
 }

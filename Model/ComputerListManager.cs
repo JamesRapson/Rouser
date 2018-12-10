@@ -28,40 +28,58 @@ namespace Rouser.Model
             LoadComputers();
         }
 
-        public ComputerDetails AddComputer(ComputerDetails computer)
+
+        /// <summary>
+        /// Use the MAC Address to find a matching computer
+        /// </summary>
+        /// <param name="macAddresses"></param>
+        /// <returns></returns>
+        public string FindByMACAddress(IEnumerable<MACAddress> macAddresses)
+        {
+            foreach (MACAddress macAddress in macAddresses)
+            {
+                var matched = _computersList.FirstOrDefault(comp =>
+                    comp.NetworkAdapters.Any(a =>
+                    {
+                        MACAddress.TryParse(a.MacAddress, out var mac1);
+                        return macAddress.Equals(mac1);
+                    }));
+
+                if (matched != null)
+                    return matched.Id;
+            }
+            return null;
+        }
+
+        public ComputerDetails AddUpdateComputer(ComputerDetails computer)
         {
             if (!string.IsNullOrWhiteSpace(computer.Id))
-                throw new Exception("Id must NOT be specified");
-
-            // Check if identical computer record already exists
-            ComputerDetails existing = _computersList.FirstOrDefault(comp => comp.Equals(computer));
-            if (existing != null)
-                return existing;
+            {
+                // Update an existing record matched by Id
+                _computersList.RemoveAll(comp => comp.Id == computer.Id);
+            }
+            else
+            {
+                var macAddresses = computer.NetworkAdapters
+                    .Select(x => MACAddress.Parse(x.MacAddress));
                 
-            ComputerDetails newComp = new ComputerDetails( Guid.NewGuid().ToString(), computer );
-            _computersList.Add(newComp);
-            WriteComputersList();
-            return newComp;
-        }
+                var matchedCompId = FindByMACAddress(macAddresses);
+                if (matchedCompId != null)
+                {
+                    _computersList.RemoveAll(comp => comp.Id == matchedCompId);
+                    computer.Id = matchedCompId;
+                }
+                else
+                {
+                    computer.Id = Guid.NewGuid().ToString();
+                }
+            }
 
-        public void UpdateComputer(ComputerDetails computer)
-        {
-            if (string.IsNullOrWhiteSpace(computer.Id))
-                throw new Exception("Id must be specified");
-
-            _computersList.RemoveAll(comp => comp.Id == computer.Id);
             _computersList.Add(computer);
             WriteComputersList();
-
+            return computer;
         }
-
-        void WriteComputersList()
-        {   
-            using (var file = File.CreateText(ComputersListFile))
-            {
-                _computersList.ForEach(computer => computer.WriteTo(file) );
-            }
-        }
+        
 
         public void Delete(string id)
         {
@@ -78,13 +96,15 @@ namespace Rouser.Model
         public ICollection<ComputerDetails> GetByFilter(string filterString = null)
         {
             return _computersList
-                .Where(x => string.IsNullOrWhiteSpace(filterString) ||
-                            x.Id.Contains(filterString) ||
-                            (!string.IsNullOrWhiteSpace(x.Name) && x.Name.Contains(filterString)) ||
-                            (!string.IsNullOrWhiteSpace(x.Description) && x.Description.Contains(filterString)) ||
-                            (!string.IsNullOrWhiteSpace(x.User) && x.User.Contains(filterString)) ||
-                            (!string.IsNullOrWhiteSpace(x.MacAddress) && x.MacAddress.Contains(filterString)) ||
-                            (!string.IsNullOrWhiteSpace(x.IPAddress) && x.IPAddress.Contains(filterString)))
+                .Where(comp => string.IsNullOrWhiteSpace(filterString) ||
+                    comp.Id.Contains(filterString) ||
+                    (!string.IsNullOrWhiteSpace(comp.Name) && comp.Name.Contains(filterString)) ||
+                    (!string.IsNullOrWhiteSpace(comp.Description) && comp.Description.Contains(filterString)) ||
+                    (!string.IsNullOrWhiteSpace(comp.User) && comp.User.Contains(filterString)) ||
+                     comp.NetworkAdapters.Any(adapter =>
+                        (!string.IsNullOrWhiteSpace(adapter.IPAddress) && adapter.IPAddress.Contains(filterString)) ||
+                        (!string.IsNullOrWhiteSpace(adapter.Subnet) && adapter.Subnet.Contains(filterString)) ||
+                        (!string.IsNullOrWhiteSpace(adapter.MacAddress) && adapter.MacAddress.Contains(filterString))))
                 .OrderByDescending(c => c.Name)
                 .Take(100)
                 .ToList();
@@ -97,24 +117,15 @@ namespace Rouser.Model
 
             _computersList.Clear();
 
-            using ( var file = File.OpenText(ComputersListFile) )
-            {
-                while ( !file.EndOfStream )
-                {
-                    var computer = ComputerDetails.ReadFrom( file );
-                    if (computer != null)
-                    {
-                        if (_computersList.Any(c => c.Id == computer.Id))
-                            continue;
+            string data = File.ReadAllText(ComputersListFile);
+            var list = Newtonsoft.Json.JsonConvert.DeserializeObject<ComputerDetails[]>(data);
+            _computersList.AddRange(list);
+        }
 
-                        _computersList.Add(computer);
-                    }
-
-                    // stop processing if we get a stupidly large number of items
-                    if (_computersList.Count > 10000 )  
-                        break;
-                }
-            }
+        void WriteComputersList()
+        {
+            string data = Newtonsoft.Json.JsonConvert.SerializeObject(_computersList);
+            File.WriteAllText(ComputersListFile, data);
         }
 
         public string ComputersListFile
@@ -123,7 +134,7 @@ namespace Rouser.Model
             {
                 if ( string.IsNullOrEmpty(_dataFolder) )
                     throw new Exception( "Folder must be specified" );
-                return Path.Combine(_dataFolder, "ComputersList.txt" );
+                return Path.Combine(_dataFolder, "ComputersList.json" );
             }
         }
     }

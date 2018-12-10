@@ -4,3 +4,8 @@
         padding-top: 50px;
     }
 }
+
+code {
+    font-family: monospace;
+    font-size: large;
+}

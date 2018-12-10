@@ -1,13 +1,18 @@
 ﻿
-export interface ComputerDetails {
-    id: string;
-    name: string;
-    description: string;
-    user: string;
+export interface NetworkAdapterDetails {
+    
     macAddress: string;
-    ipAddress: string;
+    subnet?: string;
+    ipAddress?: string;
 }
 
+export interface ComputerDetails {
+    id?: string;
+    name: string;
+    description?: string;
+    user?: string;
+    networkAdapters: NetworkAdapterDetails[];
+}
 
 export enum EditComputerCtrlModeEnum {
     Create,

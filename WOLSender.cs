@@ -7,6 +7,14 @@ namespace Rouser
 {
     public class WOLSender
     {
+        public static void Send(string macAddress, string ipAddress, string subnetMask)
+        {
+            MACAddress.TryParse(macAddress, out var mac);
+            Utils.TryExtractIPv4(ipAddress, out var ip);
+            Utils.TryExtractIPv4(subnetMask, out var mask);
+            Send(mac, ip, mask);
+        }
+
         /// <summary>
         /// Wakes up computer at the given ipAddress by send it a wake on lan packet (aka magic packet).
         /// The magic packet is sent
@@ -17,15 +25,20 @@ namespace Rouser
         /// <param name="macAddress"></param>
         /// <param name="ipAddress"></param>
         /// <param name="subnetMask"></param>
-        public static void Send(MACAddress macAddress, IPAddress ipAddress, IPAddress subnetMask = null)
+        public static void Send(MACAddress macAddress, IPAddress ipAddress, IPAddress subnetMask)
         {
             byte[] magicPacket = GenerateMagicPacket(macAddress);
 
             UdpClient client = new UdpClient();
-            client.Send(magicPacket, magicPacket.Length, ipAddress.ToString(), 3);              // send packet to target's IP address
-            System.Threading.Thread.Sleep(50);
+
             client.Send(magicPacket, magicPacket.Length, IPAddress.Broadcast.ToString(), 3);     // send to global broadcast address
 
+            if (ipAddress != null)
+            {
+                System.Threading.Thread.Sleep(50);
+                client.Send(magicPacket, magicPacket.Length, ipAddress.ToString(), 3); // send packet to target's IP address
+            }
+            
             if (subnetMask != null)
             { 
                 IPAddress broadcastAddress = GetBroadcastAddress(ipAddress, subnetMask);

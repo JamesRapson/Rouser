@@ -198,11 +198,12 @@ export class ComputerWake extends React.Component<any, any> {
                             <th>Description</th>
                             <th>IP Address</th>
                             <th>MAC Address</th>
+                            <th>Subnet</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.computersList.map(computer =>
-                            <tr key={computer.Name}>
+                        {this.state.computersList.map((computer : Rouser.ComputerDetails) =>
+                            <tr key={computer.name}>
                                 <td>
                                     <Button onClick={() => this.wakeComputer(computer)}>
                                         <Glyphicon glyph="star" /> Wake
@@ -214,8 +215,9 @@ export class ComputerWake extends React.Component<any, any> {
                                     </a>
                                 </td>
                                 <td>{computer.description}</td>
-                                <td>{computer.ipAddress}</td>
-                                <td>{computer.macAddress}</td>
+                                <td>{computer.networkAdapters[0].ipAddress}</td>
+                                <td>{computer.networkAdapters[0].macAddress}</td>
+                                <td>{computer.networkAdapters[0].subnet}</td>
                                 <td>
                                     <Button onClick={() => this.deleteComputer(computer)}>
                                         <Glyphicon glyph="remove" />

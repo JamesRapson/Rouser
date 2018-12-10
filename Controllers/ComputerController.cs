@@ -46,26 +46,15 @@ namespace Rouser.Controllers
             }
         }
 
+      
         [HttpPost()]
-        public IActionResult AddEdit(ComputerDetails computer)
+        public IActionResult AddEdit([FromBody]ComputerDetails computer)
         {
             try
             {
-                if (!IPAddress.TryParse(computer.IPAddress, out _))
-                    return StatusCode(StatusCodes.Status400BadRequest, "Invalid IP Address");
-                
-                if (!MACAddress.TryParse(computer.MacAddress, out _))
-                    return StatusCode(StatusCodes.Status400BadRequest, "Invalid MAC Address");
-
-                if (string.IsNullOrWhiteSpace(computer.Id))
-                {
-                    _computerListManager.AddComputer(computer);
-                }
-                else
-                {
-                    _computerListManager.UpdateComputer(computer);
-                }
-
+                NetworkAdapterDetails.CheckAdapters(computer.NetworkAdapters);
+                computer.NetworkAdapters = NetworkAdapterDetails.CombineAdapters(computer.NetworkAdapters);
+                _computerListManager.AddUpdateComputer(computer);
                 return Ok();
             }
             catch (Exception ex)
@@ -82,16 +71,13 @@ namespace Rouser.Controllers
                 var computer = _computerListManager.GetById(computerId);
                 if (computer == null)
                     return StatusCode(StatusCodes.Status400BadRequest, "Unknown computer id specified");
-                
-                if (!IPAddress.TryParse(computer.IPAddress, out IPAddress ipAddress))
-                    return StatusCode(StatusCodes.Status400BadRequest, "Computer has an invalid IP Address");
 
-                if (!MACAddress.TryParse(computer.MacAddress, out MACAddress macAddress))
-                    return StatusCode(StatusCodes.Status400BadRequest, "Computer has an invalid MAC Address");
-            
+                  NetworkAdapterDetails.CheckAdapters(computer.NetworkAdapters);
                 
-                var subnetMasks = NetworkUtils.GetSubnetMasks();
-                subnetMasks.ForEach(mask => WOLSender.Send(macAddress, ipAddress, mask));
+                computer.NetworkAdapters.ForEach(adapter =>
+                    {
+                        WOLSender.Send(adapter.MacAddress, adapter.IPAddress, adapter.Subnet);
+                    });
 
                 return Ok();
             }

@@ -15,9 +15,10 @@ export class EditComputerCtrl extends React.Component<Rouser.IEditComputerCtrl, 
                 computerId: props.computer.id,
                 computerName: props.computer.name,
                 computerDescription: props.computer.description,
-                computerIPAddress: props.computer.ipAddress,
-                computerMACAddress: props.computer.macAddress,
                 computerUser: props.computer.user,
+                computerSubnet: props.computer.networkAdapters[0].subnet,
+                computerIPAddress: props.computer.networkAdapters[0].ipAddress,
+                computerMACAddress: props.computer.networkAdapters[0].macAddress,
             };
 
         } else {
@@ -27,6 +28,7 @@ export class EditComputerCtrl extends React.Component<Rouser.IEditComputerCtrl, 
                 computerId: null,
                 computerName: "",
                 computerDescription: "",
+                computerSubnet: "",
                 computerIPAddress: "",
                 computerMACAddress: "",
                 computerUser: "",
@@ -49,27 +51,29 @@ export class EditComputerCtrl extends React.Component<Rouser.IEditComputerCtrl, 
     }
 
     save(): void {
-        
-        const data = new FormData();
-        if (this.state.computerId && this.state.computerId !== "")
-            data.append("id", this.state.computerId);
-        if (this.state.computerName && this.state.computerName !== "")
-            data.append("name", this.state.computerName);
-        if (this.state.computerDescription && this.state.computerDescription !== "")
-            data.append("description", this.state.computerDescription);
-        if (this.state.computerIPAddress && this.state.computerIPAddress !== "")
-            data.append("ipAddress", this.state.computerIPAddress);
-        if (this.state.computerMACAddress && this.state.computerMACAddress !== "")
-            data.append("macAddress", this.state.computerMACAddress);
-        if (this.state.computerUser && this.state.computerUser !== "")
-            data.append("user", this.state.computerUser);
+
+        let data: Rouser.ComputerDetails = {
+            id: this.state.computerId,
+            name: this.state.computerName,
+            description: this.state.computerDescription,
+            user: this.state.computerUser,
+            networkAdapters: [
+                {
+                    ipAddress: this.state.computerIPAddress,
+                    macAddress: this.state.computerMACAddress,
+                    subnet: this.state.computerSubnet
+                }
+            ]
+        };
 
         console.log(`Adding/Create new computer : ${this.state.computerName}`);
 
         const options: RequestInit = {
-            credentials: "include",
             method: "POST",
-            body: data
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+            },
+            body: JSON.stringify(data)
         };
 
         fetch("api/computer", options)
@@ -77,7 +81,7 @@ export class EditComputerCtrl extends React.Component<Rouser.IEditComputerCtrl, 
 
                 if (response.status !== 200) {
                     response.text().then(
-                        data => this.setState({ errorMessage: data })
+                        res => this.setState({ errorMessage: res })
                     );
                     return;
                 }
@@ -137,6 +141,13 @@ export class EditComputerCtrl extends React.Component<Rouser.IEditComputerCtrl, 
                                 <Col sm={9}>
                                     <FormControl type="text" placeholder="MAC Address" value={this.state.computerMACAddress}
                                         onChange={event => this.setState({ computerMACAddress: event.currentTarget.value })} />
+                                </Col>
+                            </FormGroup>
+                            <FormGroup>
+                                <Col sm={3}>Subnet Mask : </Col>
+                                <Col sm={9}>
+                                    <FormControl type="text" placeholder="Subnet Mask" value={this.state.computerSubnet}
+                                        onChange={event => this.setState({ computerSubnet: event.currentTarget.value })} />
                                 </Col>
                             </FormGroup>
                         </Form>
