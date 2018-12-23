@@ -1,0 +1,6 @@
+﻿
+Link to do wakeup and open RDP
+Responsive UI for Computer Wake page
+Confirmation on Delete
+Information page
+Add scheduled wakeup to script
