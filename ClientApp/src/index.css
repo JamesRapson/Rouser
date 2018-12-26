@@ -28,3 +28,12 @@ code {
     right: 20px;
     top: 5px;
 }
+
+.computerList-name {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+h3 {
+    margin-top:10px;
+}

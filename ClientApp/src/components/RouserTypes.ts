@@ -25,3 +25,11 @@ export interface IEditComputerCtrl {
     onSave: Function,
     onCancel: Function
 }
+
+export interface IDeleteDialogCtrl {
+    computer: ComputerDetails,
+    onDelete: Function,
+    onCancel: Function
+
+}
+

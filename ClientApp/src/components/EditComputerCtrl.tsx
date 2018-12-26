@@ -9,8 +9,6 @@ export class EditComputerCtrl extends React.Component<Rouser.IEditComputerCtrl, 
 
         if (props.mode === Rouser.EditComputerCtrlModeEnum.Edit) {
 
-            console.log(props.computer);
-
             this.state = {
                 computerId: props.computer.id,
                 computerName: props.computer.name,
@@ -52,7 +50,7 @@ export class EditComputerCtrl extends React.Component<Rouser.IEditComputerCtrl, 
 
     save(): void {
 
-        let data: Rouser.ComputerDetails = {
+        const data: Rouser.ComputerDetails = {
             id: this.state.computerId,
             name: this.state.computerName,
             description: this.state.computerDescription,

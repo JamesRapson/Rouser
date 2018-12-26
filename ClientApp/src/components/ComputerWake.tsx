@@ -1,6 +1,7 @@
 import * as React from "react";
-import { Table, Button, ControlLabel, Form, FormControl, FormGroup, Modal, Col, Alert, Glyphicon } from "react-bootstrap";
+import { ListGroup, ListGroupItem, Table, Button, ControlLabel, Form, FormControl, FormGroup, Modal, Col, Alert, Glyphicon } from "react-bootstrap";
 import { EditComputerCtrl } from "./EditComputerCtrl";
+import { DeleteComputerCtrl } from "./DeleteComputerCtrl";
 import * as Rouser from "./RouserTypes";
 
 export class ComputerWake extends React.Component<any, any> {
@@ -77,10 +78,25 @@ export class ComputerWake extends React.Component<any, any> {
     }
 
     onAfterEditCreateComputer() {
-
         this.setState({
             showAddComputerDialog: false,
             editComputer: null
+        });
+
+        this.loadComputers(this.state.filterStr);
+    }
+
+    onCancelDeleteComputer() {
+        this.setState({
+            deleteComputer: null
+        });
+    }
+
+    onDeleteComputer() {
+
+        this.showInformationMessage(`Computer ${this.state.deleteComputer.name} deleted`);
+        this.setState({
+            deleteComputer: null
         });
 
         this.loadComputers(this.state.filterStr);
@@ -91,31 +107,7 @@ export class ComputerWake extends React.Component<any, any> {
     }
 
     deleteComputer(computer: Rouser.ComputerDetails) {
-
-        console.log(`Deleting Computer : ${computer.name}`);
-
-        this.setState({ alert: null });
-
-        const options: RequestInit = {
-            credentials: "include",
-            method: "DELETE"
-        };
-
-        fetch(`api/computer/${computer.id}`, options)
-            .then(response => {
-
-                if (response.status !== 200) {
-                    response.text().then(data => this.showErrorMessage(data));
-                    return;
-                }
-
-                this.showInformationMessage(`Computer '${computer.name}' deleted`);
-
-                this.loadComputers(this.state.filterStr);
-            })
-            .catch(err => {
-                this.showInformationMessage(err);
-            });
+        this.setState({ deleteComputer: computer });
     }
 
     showErrorMessage(message: string): void {
@@ -142,6 +134,7 @@ export class ComputerWake extends React.Component<any, any> {
 
         let dialogHtml: JSX.Element = null;
         if (this.state.showAddComputerDialog) {
+
             dialogHtml = (
                 <EditComputerCtrl
                     mode={Rouser.EditComputerCtrlModeEnum.Create}
@@ -149,7 +142,9 @@ export class ComputerWake extends React.Component<any, any> {
                     onSave={() => this.onAfterEditCreateComputer()}
                     onCancel={() => this.onAfterEditCreateComputer()}>
                 </EditComputerCtrl>);
+
         } else if (this.state.editComputer) {
+
             dialogHtml = (
                 <EditComputerCtrl
                     mode={Rouser.EditComputerCtrlModeEnum.Edit}
@@ -157,6 +152,15 @@ export class ComputerWake extends React.Component<any, any> {
                     onSave={() => this.onAfterEditCreateComputer()}
                     onCancel={() => this.onAfterEditCreateComputer()}>
                 </EditComputerCtrl>);
+
+        } else if (this.state.deleteComputer) {
+
+            dialogHtml = (
+                <DeleteComputerCtrl
+                    computer={this.state.deleteComputer}
+                    onDelete={() => this.onDeleteComputer()}
+                    onCancel={() => this.onCancelDeleteComputer()}>
+                </DeleteComputerCtrl>);
         }
 
         return (
@@ -197,8 +201,6 @@ export class ComputerWake extends React.Component<any, any> {
                             <th>Name</th>
                             <th>Description</th>
                             <th>IP Address</th>
-                            <th>MAC Address</th>
-                            <th>Subnet</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -207,17 +209,15 @@ export class ComputerWake extends React.Component<any, any> {
                                 <td>
                                     <Button onClick={() => this.wakeComputer(computer)}>
                                         <Glyphicon glyph="star" /> Wake
-                                </Button>
+                                    </Button>
                                 </td>
-                                <td>
+                                <td className="computerList-name">
                                     <a href="#" onClick={() => this.editComputer(computer)}>
                                         {computer.name}
                                     </a>
                                 </td>
                                 <td>{computer.description}</td>
                                 <td>{computer.networkAdapters[0].ipAddress}</td>
-                                <td>{computer.networkAdapters[0].macAddress}</td>
-                                <td>{computer.networkAdapters[0].subnet}</td>
                                 <td>
                                     <Button onClick={() => this.deleteComputer(computer)}>
                                         <Glyphicon glyph="remove" />

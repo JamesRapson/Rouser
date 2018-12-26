@@ -37,22 +37,44 @@ const setPowerSchemeScript = `## Powershell ##
 $monitor = %monitor-standby%
 $standby = %computer-standby%
 $dailySleepTime = %dailySleepTime%
+$dailyWakeTime = %dailyWakeTime%
+$sleepComputerTaskName = "Rouser - Sleep Computer"
+$wakeComputerTaskName = "Rouser - Wake Computer"
 
 ### Set power scheme ###
-if ($monitor -neq $null) {
+if ($monitor -ne $null) {
     &powercfg -change monitor-timeout-ac $monitor
     &powercfg -change monitor-timeout-dc $monitor
 }
-if ($standby -neq $null) {
+if ($standby -ne $null) {
     &powercfg -change standby-timeout-ac $standby
     &powercfg -change standby-timeout-dc $standby
 }
 
+### Delete existing Scheduled Tasks ###
+$taskExists = Get-ScheduledTask | Where-Object {$_.TaskName -like $sleepComputerTaskName }
+if($taskExists) {
+    Unregister-ScheduledTask -TaskName $sleepComputerTaskName -Confirm:$false
+}
+
+$taskExists = Get-ScheduledTask | Where-Object {$_.TaskName -like $wakeComputerTaskName }
+if($taskExists) {
+    Unregister-ScheduledTask -TaskName $wakeComputerTaskName -Confirm:$false
+}
+
 ### Create a scheduled task to put computer to sleep ###
-if ($dailySleepTime -neq $null) {
+if ($dailySleepTime -ne $null) {
     $action = New-ScheduledTaskAction -Execute 'rundll32.exe' -Argument 'powrprof.dll,SetSuspendState 0,1,0'
     $trigger =  New-ScheduledTaskTrigger -Daily -At $dailySleepTime
-    Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "Sleep Computer" -Description "Puts computer to sleep"
+    Register-ScheduledTask -Action $action -Trigger $trigger -TaskName $sleepComputerTaskName -Description "Puts computer to sleep"
+}
+
+### Create a scheduled task wake the computer ###
+if ($dailyWakeTime -ne $null) {
+    $action = New-ScheduledTaskAction -Execute 'nothing'
+    $trigger =  New-ScheduledTaskTrigger -Daily -At $dailyWakeTime
+    $settings = New-ScheduledTaskSettingsSet -WakeToRun:$true -AllowStartIfOnBatteries:$false
+    Register-ScheduledTask -Action $action -Trigger $trigger -TaskName $wakeComputerTaskName -Description "Wakes computer" -Settings $settings
 }
 `;
 
@@ -86,7 +108,8 @@ export class Scripts extends React.Component<any, any> {
         this.state = {
             monitorStandby: 60,
             computerStandby: 120,
-            dailySleepTime: sleepTimeOptions[0].value
+            dailySleepTime: sleepTimeOptions[0].value,
+            dailyWakeTime :sleepTimeOptions[0].value
         };
 
         for (let hour = 1; hour <= 12; hour++) {
@@ -104,13 +127,12 @@ export class Scripts extends React.Component<any, any> {
 
     copySetPowerSchemeScriptToClipboard(): void {
         this.setPowerSchemeScriptTextArea.select();
-        document.execCommand("Copy");
-        
+        document.execCommand("Copy");   
     }
 
     getTitleForDropdownList(selectedValue: string|number, options: DropdownOption[]): string {
 
-        let selected = options.filter(x => x.value === selectedValue);
+        const selected = options.filter(x => x.value === selectedValue);
         if (selected && selected.length > 0)
             return selected[0].label;
         return null;
@@ -121,6 +143,7 @@ export class Scripts extends React.Component<any, any> {
         let modifiedSetPowerSchemeScript = setPowerSchemeScript.replace("%monitor-standby%", this.state.monitorStandby);
         modifiedSetPowerSchemeScript = modifiedSetPowerSchemeScript.replace("%computer-standby%", this.state.computerStandby);
         modifiedSetPowerSchemeScript = modifiedSetPowerSchemeScript.replace("%dailySleepTime%", this.state.dailySleepTime);
+        modifiedSetPowerSchemeScript = modifiedSetPowerSchemeScript.replace("%dailyWakeTime%", this.state.dailyWakeTime);
 
         return (
             <Panel bsStyle="primary">
@@ -175,6 +198,21 @@ export class Scripts extends React.Component<any, any> {
                                     </DropdownButton>
                                 </Col>
                             </FormGroup>
+                            <FormGroup>
+                                <Col sm={2}>Scheduled Wakeup Time : </Col>
+                                <Col sm={3}>
+                                    <DropdownButton
+                                        title={this.getTitleForDropdownList(this.state.dailyWakeTime, sleepTimeOptions)}
+                                        bsStyle="default"
+                                        id="drpDailySleepTime"
+                                        onSelect={(val: any) => this.setState({ dailyWakeTime: val })}
+                                        key={this.state.dailyWakeTime} >
+                                        {sleepTimeOptions.map((option) =>
+                                            (<MenuItem key={option.value} eventKey={option.value}>{option.label}</MenuItem>)
+                                        )}
+                                    </DropdownButton>
+                                </Col>
+                            </FormGroup>
                         </Form>
                     </div>
                     <div className="scriptBlockContainer">
@@ -182,8 +220,8 @@ export class Scripts extends React.Component<any, any> {
                             ref={(textarea) => this.setPowerSchemeScriptTextArea = textarea}
                             value={modifiedSetPowerSchemeScript}
                         />
-                        <Button onClick={() => this.copySetPowerSchemeScriptToClipboard()} className="clipboardBtn">Copy
-                            <Glyphicon glyph="copy" />
+                        <Button onClick={() => this.copySetPowerSchemeScriptToClipboard()} className="clipboardBtn">
+                            <Glyphicon glyph="copy" /> Copy
                         </Button>
                     </div>
                 </Panel.Body>
@@ -193,7 +231,7 @@ export class Scripts extends React.Component<any, any> {
     renderAddComputerScript(): JSX.Element {
 
         const baseUrl = window.location.href.replace("scripts", "");
-        let modifiedAddComputerScript = addComputerScript.replace("%baseUrl%", baseUrl);
+        const modifiedAddComputerScript = addComputerScript.replace("%baseUrl%", baseUrl);
 
         return (
             <Panel bsStyle="primary">
@@ -207,8 +245,8 @@ export class Scripts extends React.Component<any, any> {
                             ref={(textarea) => this.addComputerScriptTextArea = textarea}
                             value={modifiedAddComputerScript}
                         />
-                        <Button onClick={() => this.copyAddComputerScriptToClipboard()} className="clipboardBtn">Copy
-                            <Glyphicon glyph="copy" />
+                        <Button onClick={() => this.copyAddComputerScriptToClipboard()} className="clipboardBtn">
+                            <Glyphicon glyph="copy" /> Copy
                         </Button>
                     </div>
                 </Panel.Body>
