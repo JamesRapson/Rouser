@@ -284,7 +284,7 @@ export class ComputerWake extends React.Component<any, any> {
                     <h2>Computers</h2>
                     <Checkbox
                         checked={this.state.autoOpenRdpFile}
-                        onClick={event => this.setOpenRdpFile(event.currentTarget.checked)}
+                        onClick={(event: any) => this.setOpenRdpFile(event.currentTarget.checked)}
                         className="openRdpCheckbox">
                         Open RDP on Wake
                     </Checkbox>
@@ -309,16 +309,17 @@ export class ComputerWake extends React.Component<any, any> {
                             Clear recent
                         </a>
                     </div> : <div></div>}
+
                 {this.renderComputersList(this.state.recentComputersList)}
 
                 <h4>Computers</h4>
                 <div className="filterForm">
                     <Form inline>
-                        <FormGroup >
+                        <FormGroup>
                             <ControlLabel>Filter </ControlLabel>
                             <FormControl type="text" placeholder="Search" value={this.state.filterStr}
-                                onChange={event => this.setState({ filterStr: event.currentTarget.value })} />
-                        </FormGroup>{' '}
+                                onChange={(event: any) => this.setState({ filterStr: event.currentTarget.value })} />
+                        </FormGroup>{" "}
                         <FormGroup>
                             <Button onClick={() => this.loadComputers(this.state.filterStr)}>
                                 <Glyphicon glyph="filter" /> Filter

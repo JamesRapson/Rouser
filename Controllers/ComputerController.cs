@@ -84,22 +84,33 @@ namespace Rouser.Controllers
             }
         }
 
+        private static int MinSendIntervalMillisec = 100;
+
+        /// <summary>
+        /// Simple way to rate limit sending of wol packets
+        /// </summary>
+        private static DateTime _lastWolTime = DateTime.MinValue;
+
         [HttpGet("[action]/{computerId}")]
-        public IActionResult Wake(string computerId)
+        public async Task<IActionResult> Wake(string computerId)
         {
             try
             {
+                if (DateTime.Now.Subtract(_lastWolTime).Milliseconds < MinSendIntervalMillisec)
+                    await Task.Delay(MinSendIntervalMillisec);
+
                 var computer = _computerListManager.GetById(computerId);
                 if (computer == null)
                     return StatusCode(StatusCodes.Status400BadRequest, "Unknown computer id specified");
 
-                  NetworkAdapterDetails.CheckAdapters(computer.NetworkAdapters);
-                
-                computer.NetworkAdapters.ForEach(adapter =>
-                    {
-                        WOLSender.Send(adapter.MacAddress, adapter.IPAddress, adapter.Subnet);
-                    });
+                NetworkAdapterDetails.CheckAdapters(computer.NetworkAdapters);
 
+                computer.NetworkAdapters.ForEach(async adapter =>
+                {
+                    await WolSender.Send(adapter.MacAddress, adapter.IPAddress, adapter.Subnet);
+                });
+
+                _lastWolTime = DateTime.Now;
                 return Ok();
             }
             catch (Exception ex)

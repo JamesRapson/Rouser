@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using Rouser.Model;
 
 namespace Rouser
 {
-    public static class WOLSender
+    public static class WolSender
     {
-        public static void Send(string macAddress, string ipAddress, string subnetMask)
+
+        public static async Task Send(string macAddress, string ipAddress, string subnetMask)
         {
             MACAddress.TryParse(macAddress, out var mac);
             Utils.TryExtractIPv4(ipAddress, out var ip);
             Utils.TryExtractIPv4(subnetMask, out var mask);
-            Send(mac, ip, mask);
+            await Send(mac, ip, mask);
         }
 
         /// <summary>
@@ -25,18 +27,18 @@ namespace Rouser
         /// <param name="macAddress"></param>
         /// <param name="ipAddress"></param>
         /// <param name="subnetMask"></param>
-        public static void Send(MACAddress macAddress, IPAddress ipAddress, IPAddress subnetMask)
+        public static async Task Send(MACAddress macAddress, IPAddress ipAddress, IPAddress subnetMask)
         {
             byte[] magicPacket = GenerateMagicPacket(macAddress);
 
             UdpClient client = new UdpClient();
 
-            client.Send(magicPacket, magicPacket.Length, IPAddress.Broadcast.ToString(), 3);     // send to global broadcast address
+            await client.SendAsync(magicPacket, magicPacket.Length, IPAddress.Broadcast.ToString(), 3);     // send to global broadcast address
 
             if (ipAddress != null)
             {
                 System.Threading.Thread.Sleep(50);
-                client.Send(magicPacket, magicPacket.Length, ipAddress.ToString(), 3); // send packet to target's IP address
+                await client.SendAsync(magicPacket, magicPacket.Length, ipAddress.ToString(), 3); // send packet to target's IP address
             }
             
             if (subnetMask != null)
@@ -44,7 +46,7 @@ namespace Rouser
                 IPAddress broadcastAddress = GetBroadcastAddress(ipAddress, subnetMask);
 
                 System.Threading.Thread.Sleep(50);
-                client.Send(magicPacket, magicPacket.Length, broadcastAddress.ToString(), 3);     // send packet to subnet broadcast address
+                await client.SendAsync(magicPacket, magicPacket.Length, broadcastAddress.ToString(), 3);     // send packet to subnet broadcast address
             }
         }
 

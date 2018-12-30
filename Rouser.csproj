@@ -32,6 +32,13 @@
     <None Remove="ClientApp\src\components\Scripts.tsx" />
     <None Remove="ClientApp\src\index.tsx" />
     <None Remove="ClientApp\src\registerServiceWorker.js" />
+    <None Remove="CustomDictionary.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="CustomDictionary.xml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </AdditionalFiles>
   </ItemGroup>
 
   <ItemGroup>
