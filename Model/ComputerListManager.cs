@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MoreLinq;
+using Newtonsoft.Json;
 
 
 namespace Rouser.Model
@@ -140,7 +141,7 @@ namespace Rouser.Model
 
         void WriteComputersList()
         {
-            string data = Newtonsoft.Json.JsonConvert.SerializeObject(_computersList);
+            string data = Newtonsoft.Json.JsonConvert.SerializeObject(_computersList, Formatting.Indented);
             File.WriteAllText(ComputersListFile, data);
         }
 

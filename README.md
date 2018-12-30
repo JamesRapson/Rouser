@@ -14,11 +14,16 @@ and provides a script for setting a computer's power scheme and creating a sched
 
 The ultimate aim is to save energy/power, CO2 and money in the running cost of your desktop fleet
 
+## Technical Details
+This is a ASP.NET Core project with a SPA style client application using Typescript
+Power Management scripts are currently in  onlyPowershell, however the plan is to provide equivalent scripts for MAC OS and Linux
+
 
 ## TODO List
 DONE On computer list page show previously woken computers at top of list
-- Make UI responsive so it can be used from a mobile phone
+DONE Make UI responsive so it can be used from a mobile phone
 DONE Provide a link to wake computer and open an RDP file
 - Implement authentication (Think techture? Open ID) 
-- Rate limit sending on WOLs such that website is not used to DOS on a network
+DONE Rate limit sending on WOLs such that website is not used to DOS on a network
+Add OS type field
 

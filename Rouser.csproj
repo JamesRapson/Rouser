@@ -36,9 +36,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="CustomDictionary.xml">
+    <ApplicationDefinition Include="CustomDictionary.xml">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </AdditionalFiles>
+    </ApplicationDefinition>
   </ItemGroup>
 
   <ItemGroup>

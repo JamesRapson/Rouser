@@ -1,20 +1,42 @@
 ﻿
 export class CookiesUtility {
 
+    static RecentComputersListCookieName: string = "recent-computers-list";
+    static AutoOpenRDPFileCookieName: string = "auto-open-rdpFile";
+
     static addRecentComputer(computerName: string): void {
 
-        let val = CookiesUtility.getCookie("recent-computers-list");
+        let val = CookiesUtility.getCookie(CookiesUtility.RecentComputersListCookieName);
         if (val == null) {
             val = "";
         }
         let names = val.split("|");
         names.push(computerName);
-        let distinctItems = names.filter((value, index, self) => self.indexOf(value) === index);
-        CookiesUtility.setCookie("recent-computers-list", distinctItems.join("|"), 100);
+        let distinctNames = names.filter((value, index, self) => self.indexOf(value) === index);
+        CookiesUtility.setCookie(CookiesUtility.RecentComputersListCookieName, distinctNames.join("|"), 100);
     };
 
+    static removeRecentComputer(computerName: string): void {
+        let val = CookiesUtility.getCookie(CookiesUtility.RecentComputersListCookieName);
+        if (val == null) {
+            val = "";
+        }
+        let names = val.split("|");
+        names = names.filter((value, index, self) => value !== computerName);
+        CookiesUtility.setCookie(CookiesUtility.RecentComputersListCookieName, names.join("|"), 100);
+    }
+
     static clearRecentComputersList(): void {
-        CookiesUtility.eraseCookie("recent-computers-list");
+        CookiesUtility.eraseCookie(CookiesUtility.RecentComputersListCookieName);
+    }
+
+    static setOpenRdpFileValue(val: boolean): void {
+        CookiesUtility.setCookie(CookiesUtility.AutoOpenRDPFileCookieName, val.toString(), 100);
+    }
+
+    static getOpenRdpFileValue(): boolean  {
+        const val = CookiesUtility.getCookie(CookiesUtility.AutoOpenRDPFileCookieName);
+        return val === "true";
     }
 
     static setCookie(cookieName: string, value: string, days?: number): void {
@@ -23,9 +45,9 @@ export class CookiesUtility {
         if (days) {
             let date = new Date();
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            expires = "; expires=" + date.toUTCString();
+            expires = `; expires=${date.toUTCString()}`;
         }
-        document.cookie = cookieName + "=" + (value || "") + expires + "; path=/";
+        document.cookie = `${cookieName}=${(value || "")}${expires}; path=/`;
     };
 
     static getCookie(cookieName: string): string {
@@ -49,6 +71,6 @@ export class CookiesUtility {
 
     static eraseCookie(cookieName: string): void {
 
-        document.cookie = cookieName + '=; Max-Age=-99999999;';
+        document.cookie = `${cookieName}=;Max-Age=-99999999;`;
     };
 }

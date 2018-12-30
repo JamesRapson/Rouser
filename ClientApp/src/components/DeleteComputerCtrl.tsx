@@ -15,9 +15,9 @@ export class DeleteComputerCtrl extends React.Component<Rouser.IDeleteDialogCtrl
         this.handleCancel = this.handleCancel.bind(this);
     }
 
-    handleDelete() {
+    handleDelete(computer: Rouser.ComputerDetails) {
         if (this.props.onDelete)
-            this.props.onDelete();
+            this.props.onDelete(computer);
     }
 
     handleCancel() {
@@ -46,7 +46,7 @@ export class DeleteComputerCtrl extends React.Component<Rouser.IDeleteDialogCtrl
                     return;
                 }
 
-                this.handleDelete();
+                this.handleDelete(this.props.computer);
             })
             .catch(err => {
                 console.log(err);

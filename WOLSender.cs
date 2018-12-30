@@ -37,7 +37,7 @@ namespace Rouser
 
             if (ipAddress != null)
             {
-                System.Threading.Thread.Sleep(50);
+                await Task.Delay(10);
                 await client.SendAsync(magicPacket, magicPacket.Length, ipAddress.ToString(), 3); // send packet to target's IP address
             }
             
@@ -45,7 +45,7 @@ namespace Rouser
             { 
                 IPAddress broadcastAddress = GetBroadcastAddress(ipAddress, subnetMask);
 
-                System.Threading.Thread.Sleep(50);
+                await Task.Delay(10);
                 await client.SendAsync(magicPacket, magicPacket.Length, broadcastAddress.ToString(), 3);     // send packet to subnet broadcast address
             }
         }

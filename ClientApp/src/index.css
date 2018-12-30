@@ -47,12 +47,6 @@ h3 {
     border-top-right-radius: 4px;
 }
 
-.filterForm label {
-    padding-left:10px;
-    padding-right:20px;
-}
-
-
 .computerlist-table {
     width: 100%;
 }
@@ -74,19 +68,23 @@ h3 {
     width:1px;
 }
 
-.title {
-    position: relative;
+.title-bar {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
 }
-.addComputerButton {
-    position: absolute;
-    right:5px;
-    top:0px;
+.title-bar-rhs {
+   padding: 10px 0 0 0;
 }
 
-.openRdpCheckbox {
+.openRdp {
     position: absolute;
-    left: 180px;
-    top: 0px;
+    right: 5px;
+}
+.openRdp Checkbox {
+    position: absolute;
+    right:5px;
 }
 
 .recentList-header {

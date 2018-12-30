@@ -17,8 +17,7 @@ export class ComputerWake extends React.Component<any, any> {
         const computersList: Array<Rouser.ComputerDetails> = [];
         const recentComputersList: Array<Rouser.ComputerDetails> = [];
         const selectedComputers: Array<string> = [];
-
-        let autoOpen = CookiesUtility.getCookie("auto-open-rdpFile");
+        const autoOpenRdpFile = CookiesUtility.getOpenRdpFileValue();
 
         this.state = {
             computersList,
@@ -27,20 +26,21 @@ export class ComputerWake extends React.Component<any, any> {
             filterStr: "",
             showAddComputerDialog: false,
             editComputer: null,
-            autoOpenRdpFile: (autoOpen === "true")
+            autoOpenRdpFile
         };
 
         this.loadRecentComputers();
     }
 
-    loadRecentComputers(): void {
+
+    loadComputersList(url: string): Promise<Array<Rouser.ComputerDetails>> {
 
         const options: RequestInit = {
             credentials: "include",
             method: "GET"
         };
 
-        fetch(`api/computer/recent`, options)
+        return fetch(url, options)
             .then(response => {
 
                 if (response.status !== 200) {
@@ -48,50 +48,40 @@ export class ComputerWake extends React.Component<any, any> {
                     return [];
                 }
                 return response.json();
-            })
-            .then(data => {
-                this.setState(
-                    {
-                        recentComputersList: data,
-                    }
-                );
             })
             .catch(err => {
                 this.showErrorMessage(err);
             });
     }
 
-    loadComputers(filterStr: string): void {
+    loadRecentComputers(): void {
 
-        const options: RequestInit = {
-            credentials: "include",
-            method: "GET"
-        };
-
-        fetch(`api/computer/list/${filterStr}`, options)
-            .then(response => {
-
-                if (response.status !== 200) {
-                    response.text().then(data => this.showErrorMessage(data));
-                    return [];
-                }
-                return response.json();
-            })
-            .then(data => {
+        this.loadComputersList(`api/computer/recent`)
+            .then((list: Array<Rouser.ComputerDetails>) => {
                 this.setState(
                     {
-                        computersList: data,
+                        recentComputersList: list,
                     }
                 );
-            })
-            .catch(err => {
-                this.showErrorMessage(err);
+            });
+    }
+
+    loadFilteredComputers(filterStr: string): void {
+
+        this.loadComputersList(`api/computer/list/${filterStr}`)
+            .then((list: Array<Rouser.ComputerDetails>) => {
+                this.setState(
+                    {
+                        computersList: list,
+                    }
+                );
             });
     }
 
     wakeComputer(computer: Rouser.ComputerDetails): void {
 
         console.log(`Waking Computer : ${computer.name}`);
+
         this.setState({ alert: null });
         CookiesUtility.addRecentComputer(computer.name);
 
@@ -119,9 +109,8 @@ export class ComputerWake extends React.Component<any, any> {
 
     downloadRdpFile(computer: Rouser.ComputerDetails): void {
 
-        let val = CookiesUtility.getCookie("auto-open-rdpFile");
-        if (val === "true") {
-            let element: HTMLAnchorElement = document.createElement("a");
+        if (this.state.autoOpenRdpFile) {
+            const element = document.createElement("a");
             element.setAttribute("href", `api/computer/getrdpfile/${computer.id}`);
             element.setAttribute("download", `${computer.name}.rdp`);
             element.style.display = "none";
@@ -154,8 +143,10 @@ export class ComputerWake extends React.Component<any, any> {
         this.loadRecentComputers();
     }
     
-    onAfterDeleteComputer() {
+    onAfterDeleteComputer(computer: Rouser.ComputerDetails) {
         this.showInformationMessage(`Computer ${this.state.deleteComputer.name} deleted`);
+
+        CookiesUtility.removeRecentComputer(computer.name);
         this.setState({
             deleteComputer: null
         });
@@ -180,7 +171,6 @@ export class ComputerWake extends React.Component<any, any> {
     }
 
     showErrorMessage(message: string): void {
-
         this.setState({
             alert: {
                 message,
@@ -190,7 +180,6 @@ export class ComputerWake extends React.Component<any, any> {
     }
 
     showInformationMessage(message: string): void {
-
         this.setState({
             alert: {
                 message,
@@ -206,7 +195,7 @@ export class ComputerWake extends React.Component<any, any> {
     }
 
     setOpenRdpFile(val: boolean): void {
-        CookiesUtility.setCookie("auto-open-rdpFile", val.toString(), 100);
+        CookiesUtility.setOpenRdpFileValue(val);
         this.setState({ autoOpenRdpFile: val });
     }
 
@@ -216,41 +205,42 @@ export class ComputerWake extends React.Component<any, any> {
             <table className="computerlist-table">
                 <tbody>
                     {computersList.map((computer: Rouser.ComputerDetails) =>
-
                         <tr key={computer.id} className="computerlist-row">
-                        <td className="computerlist-buttonCol">
-                            <Button onClick={() => this.wakeComputer(computer)}>
-                                <Glyphicon glyph="star" /> Wake
-                            </Button>
-                        </td>
-                        <td className="computerlist-nameCol">
-                            <a href="#" onClick={() => this.editComputer(computer)} >
-                                {computer.name}
-                            </a>
-                        </td>
-                        <td className="computerlist-col">
-                            {computer.description}
-                        </td>
-                        <td className="computerlist-col">
-                            IP {computer.networkAdapters[0].ipAddress}
-                        </td>
-                        <td className="computerlist-buttonCol">
-                            <Button onClick={() => this.deleteComputer(computer)}>
-                                <Glyphicon glyph="remove" />
-                            </Button>
-                        </td>
-                    </tr>
+                            <td className="computerlist-buttonCol">
+                                <Button onClick={() => this.wakeComputer(computer)}>
+                                    <Glyphicon glyph="star"/> Wake
+                                </Button>
+                            </td>
+                            <td className="computerlist-nameCol">
+                                <a href="#" onClick={() => this.editComputer(computer)}>
+                                    {computer.name}
+                                </a>
+                            </td>
+                            <td className="computerlist-col">
+                                {computer.description}
+                            </td>
+                            <td className="computerlist-col hidden-xs">
+                                {computer.user}
+                            </td>
+                            <td className="computerlist-col hidden-sm hidden-xs">
+                                IP {computer.networkAdapters[0].ipAddress}
+                            </td>
+                            <td className="computerlist-buttonCol">
+                                <Button onClick={() => this.deleteComputer(computer)}>
+                                    <Glyphicon glyph="remove"/>
+                                </Button>
+                            </td>
+                        </tr>
                     )}
                 </tbody>
             </table>);
     }
 
-    render(): JSX.Element {
+    renderDialogs(): JSX.Element {
 
-        let dialogHtml: JSX.Element = null;
         if (this.state.showAddComputerDialog) {
 
-            dialogHtml = (
+            return (
                 <EditComputerCtrl
                     mode={Rouser.EditComputerCtrlModeEnum.Create}
                     computer={null}
@@ -260,7 +250,7 @@ export class ComputerWake extends React.Component<any, any> {
 
         } else if (this.state.editComputer) {
 
-            dialogHtml = (
+            return (
                 <EditComputerCtrl
                     mode={Rouser.EditComputerCtrlModeEnum.Edit}
                     computer={this.state.editComputer}
@@ -270,31 +260,39 @@ export class ComputerWake extends React.Component<any, any> {
 
         } else if (this.state.deleteComputer) {
 
-            dialogHtml = (
+            return (
                 <DeleteComputerCtrl
                     computer={this.state.deleteComputer}
-                    onDelete={() => this.onAfterDeleteComputer()}
+                    onDelete={(computer: Rouser.ComputerDetails) => this.onAfterDeleteComputer(computer)}
                     onCancel={() => this.onCancelCreateEditDeleteComputer()}>
                 </DeleteComputerCtrl>);
         }
 
+        return null;
+    }
+
+    render(): JSX.Element {
+
         return (
             <div>
-                <div className="title">
-                    <h2>Computers</h2>
-                    <Checkbox
-                        checked={this.state.autoOpenRdpFile}
-                        onClick={(event: any) => this.setOpenRdpFile(event.currentTarget.checked)}
-                        className="openRdpCheckbox">
-                        Open RDP on Wake
-                    </Checkbox>
-
-                    <Button onClick={() => this.setState({ showAddComputerDialog: true })} className="addComputerButton">
-                        <Glyphicon glyph="plus" /> Add Computer
-                    </Button>
+                <div className="title-bar">
+                    <div>
+                        <h2>Computers</h2>
+                    </div>
+                    <div className="title-bar-rhs">
+                        <Button onClick={() => this.setState({ showAddComputerDialog: true })}>
+                            <Glyphicon glyph="plus" /> Add Computer
+                        </Button>
+                        <Checkbox
+                            checked={this.state.autoOpenRdpFile}
+                            onClick={(event: any) => this.setOpenRdpFile(event.currentTarget.checked)}
+                            >
+                            Open RDP on Wake
+                        </Checkbox>
+                    </div>
                 </div>
 
-                {dialogHtml}
+                {this.renderDialogs()}
 
                 {this.state.alert != null ? (
                     <Alert bsStyle={this.state.alert.style}>{this.state.alert.message}</Alert>
@@ -316,12 +314,11 @@ export class ComputerWake extends React.Component<any, any> {
                 <div className="filterForm">
                     <Form inline>
                         <FormGroup>
-                            <ControlLabel>Filter </ControlLabel>
                             <FormControl type="text" placeholder="Search" value={this.state.filterStr}
                                 onChange={(event: any) => this.setState({ filterStr: event.currentTarget.value })} />
                         </FormGroup>{" "}
                         <FormGroup>
-                            <Button onClick={() => this.loadComputers(this.state.filterStr)}>
+                            <Button onClick={() => this.loadFilteredComputers(this.state.filterStr)}>
                                 <Glyphicon glyph="filter" /> Filter
                             </Button>
                         </FormGroup>
