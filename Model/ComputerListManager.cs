@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using Rouser.Model;
+using MoreLinq;
+
 
 namespace Rouser.Model
 {
@@ -119,6 +119,11 @@ namespace Rouser.Model
                 .OrderByDescending(c => c.Name)
                 .Take(100)
                 .ToList();
+        }
+
+        public IEnumerable<ComputerDetails> GetByName(string[] names)
+        {
+            return _computersList.Where(comp => names.Contains(comp.Name));
         }
 
         void LoadComputers()

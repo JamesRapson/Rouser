@@ -25,6 +25,7 @@
   <ItemGroup>
     <None Remove="ClientApp\src\App.tsx" />
     <None Remove="ClientApp\src\components\ComputerWake.tsx" />
+    <None Remove="ClientApp\src\components\CookiesUtility.ts" />
     <None Remove="ClientApp\src\components\Layout.tsx" />
     <None Remove="ClientApp\src\components\NavMenu.tsx" />
     <None Remove="ClientApp\src\components\RouserTypes.ts" />
@@ -36,6 +37,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\App.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\ComputerWake.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\CookiesUtility.ts" />
     <TypeScriptCompile Include="ClientApp\src\components\Scripts.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\Layout.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\NavMenu.tsx" />

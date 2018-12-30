@@ -155,7 +155,7 @@ export class Scripts extends React.Component<any, any> {
                     <div>
                         <Form horizontal>
                             <FormGroup>
-                                <Col sm={2}>Monitor Standby : </Col>
+                                <Col sm={3}>Monitor Standby : </Col>
                                 <Col sm={3}>
                                     <DropdownButton
                                         title={this.getTitleForDropdownList(this.state.monitorStandby, sleepDurationOptions)}
@@ -170,7 +170,7 @@ export class Scripts extends React.Component<any, any> {
                                 </Col>
                             </FormGroup>
                             <FormGroup>
-                                <Col sm={2}>Computer Standby : </Col>
+                                <Col sm={3}>Computer Standby : </Col>
                                 <Col sm={3}>
                                     <DropdownButton
                                         title={this.getTitleForDropdownList(this.state.computerStandby, sleepDurationOptions)}
@@ -184,7 +184,7 @@ export class Scripts extends React.Component<any, any> {
                                 </Col>
                             </FormGroup>
                             <FormGroup>
-                                <Col sm={2}>Scheduled Sleep Time : </Col>
+                                <Col sm={3}>Scheduled Sleep Time : </Col>
                                 <Col sm={3}>
                                     <DropdownButton
                                         title={this.getTitleForDropdownList(this.state.dailySleepTime, sleepTimeOptions)}
@@ -199,7 +199,7 @@ export class Scripts extends React.Component<any, any> {
                                 </Col>
                             </FormGroup>
                             <FormGroup>
-                                <Col sm={2}>Scheduled Wakeup Time : </Col>
+                                <Col sm={3}>Scheduled Wakeup Time : </Col>
                                 <Col sm={3}>
                                     <DropdownButton
                                         title={this.getTitleForDropdownList(this.state.dailyWakeTime, sleepTimeOptions)}

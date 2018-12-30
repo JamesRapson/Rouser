@@ -37,3 +37,64 @@ code {
 h3 {
     margin-top:10px;
 }
+
+.filterForm {
+    border: 1px solid #eee;
+    background-color: #eee;
+    padding:6px;
+    margin: 5px 0 5px 0;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+.filterForm label {
+    padding-left:10px;
+    padding-right:20px;
+}
+
+
+.computerlist-table {
+    width: 100%;
+}
+.computerlist-row {
+    border: 1px solid #eee;  
+}
+
+.computerlist-col {
+    padding: 6px;
+}
+.computerlist-nameCol {
+    padding: 6px 6px 6px 12px;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.computerlist-buttonCol {
+    padding: 6px;
+    width:1px;
+}
+
+.title {
+    position: relative;
+}
+.addComputerButton {
+    position: absolute;
+    right:5px;
+    top:0px;
+}
+
+.openRdpCheckbox {
+    position: absolute;
+    left: 180px;
+    top: 0px;
+}
+
+.recentList-header {
+    position: relative;
+}
+
+.recentList-clear {
+    position: absolute;
+    right: 5px;
+    top: 0px;
+}

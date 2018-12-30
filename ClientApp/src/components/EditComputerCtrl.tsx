@@ -38,9 +38,9 @@ export class EditComputerCtrl extends React.Component<Rouser.IEditComputerCtrl, 
         this.handleCancel = this.handleCancel.bind(this);
     }
 
-    handleSave() {
+    handleSave(computer : Rouser.ComputerDetails) {
         if (this.props.onSave)
-            this.props.onSave();
+            this.props.onSave(computer);
     }
 
     handleCancel() {
@@ -81,10 +81,12 @@ export class EditComputerCtrl extends React.Component<Rouser.IEditComputerCtrl, 
                     response.text().then(
                         res => this.setState({ errorMessage: res })
                     );
-                    return;
                 }
-
-                this.handleSave();
+                return response.json();
+            })
+            .then((computer: Rouser.ComputerDetails) => {
+                console.log(computer);
+                this.handleSave(computer);
             })
             .catch(err => {
                 console.log(err);
@@ -117,35 +119,35 @@ export class EditComputerCtrl extends React.Component<Rouser.IEditComputerCtrl, 
                                 <Col sm={3}>Name : </Col>
                                 <Col sm={9}>
                                     <FormControl type="text" placeholder="Name" value={this.state.computerName}
-                                        onChange={event => this.setState({ computerName: event.currentTarget.value })} />
+                                        onChange={(event :any) => this.setState({ computerName: event.currentTarget.value })} />
                                 </Col>
                             </FormGroup>
                             <FormGroup>
                                 <Col sm={3}>Description : </Col>
                                 <Col sm={9}>
                                     <FormControl type="text" placeholder="Description" value={this.state.computerDescription}
-                                        onChange={event => this.setState({ computerDescription: event.currentTarget.value })} />
+                                        onChange={(event: any) => this.setState({ computerDescription: event.currentTarget.value })} />
                                 </Col>
                             </FormGroup>
                             <FormGroup>
                                 <Col sm={3}>IP Address : </Col>
                                 <Col sm={9}>
                                     <FormControl type="text" placeholder="IP Address" value={this.state.computerIPAddress}
-                                        onChange={event => this.setState({ computerIPAddress: event.currentTarget.value })} />
+                                        onChange={(event: any) => this.setState({ computerIPAddress: event.currentTarget.value })} />
                                 </Col>
                             </FormGroup>
                             <FormGroup>
                                 <Col sm={3}>MAC Address : </Col>
                                 <Col sm={9}>
                                     <FormControl type="text" placeholder="MAC Address" value={this.state.computerMACAddress}
-                                        onChange={event => this.setState({ computerMACAddress: event.currentTarget.value })} />
+                                        onChange={(event: any) => this.setState({ computerMACAddress: event.currentTarget.value })} />
                                 </Col>
                             </FormGroup>
                             <FormGroup>
                                 <Col sm={3}>Subnet Mask : </Col>
                                 <Col sm={9}>
                                     <FormControl type="text" placeholder="Subnet Mask" value={this.state.computerSubnet}
-                                        onChange={event => this.setState({ computerSubnet: event.currentTarget.value })} />
+                                        onChange={(event: any) => this.setState({ computerSubnet: event.currentTarget.value })} />
                                 </Col>
                             </FormGroup>
                         </Form>

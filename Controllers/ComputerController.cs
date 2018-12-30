@@ -11,6 +11,7 @@ using Rouser.Configuration;
 using Rouser.Model;
 using MoreLinq;
 using System.Net;
+using System.Text;
 
 namespace Rouser.Controllers
 {
@@ -21,7 +22,9 @@ namespace Rouser.Controllers
         private readonly ILogger<ComputerController> _logger;
         private readonly ComputerListManager _computerListManager;
 
-        public ComputerController(IOptions<ConfigSettings> settings, ILogger<ComputerController> logger,
+        public ComputerController(
+            IOptions<ConfigSettings> settings, 
+            ILogger<ComputerController> logger,
             ComputerListManager computerListManager)
         {
             _settings = settings.Value;
@@ -41,12 +44,30 @@ namespace Rouser.Controllers
             }
             catch (Exception ex)
             {
-                _logger?.LogError($"Failed to get list of commands. Error {ex}");
+                _logger?.LogError($"Failed to get list of computers. Error {ex}");
                 throw;
             }
         }
 
-      
+        [HttpGet("[action]")]
+        public ICollection<ComputerDetails> Recent()
+        {
+            try
+            {
+                var computersList = GetRecentComputerNames();
+                if (computersList == null)
+                    return new List<ComputerDetails>();
+
+                return _computerListManager.GetByName(computersList).ToArray();
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError($"Failed to get recent computers. Error {ex}");
+                throw;
+            }
+        }
+
+
         [HttpPost()]
         public IActionResult AddEdit([FromBody]ComputerDetails computer)
         {
@@ -54,8 +75,8 @@ namespace Rouser.Controllers
             {
                 NetworkAdapterDetails.CheckAdapters(computer.NetworkAdapters);
                 computer.NetworkAdapters = NetworkAdapterDetails.CombineAdapters(computer.NetworkAdapters);
-                _computerListManager.AddUpdateComputer(computer);
-                return Ok();
+                ComputerDetails newComputer = _computerListManager.AddUpdateComputer(computer);
+                return Ok(newComputer);
             }
             catch (Exception ex)
             {
@@ -87,6 +108,17 @@ namespace Rouser.Controllers
             }
         }
 
+        [HttpGet("[action]/{computerId}")]
+        public IActionResult GetRDPFile(string computerId)
+        {
+            var computer = _computerListManager.GetById(computerId);
+            if (computer == null)
+                return StatusCode(StatusCodes.Status400BadRequest, "Unknown computer id specified");
+
+            string fileContent = $"full address:s:{computer.Name}";
+            return File(Encoding.UTF8.GetBytes(fileContent), "text/rdp", $"{computer.Name}.rdp");
+        }
+
         [HttpDelete("{computerId}")]
         public IActionResult Delete(string computerId)
         {
@@ -104,5 +136,15 @@ namespace Rouser.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
+        string[] GetRecentComputerNames()
+        {
+            string recentComputers = Request.Cookies["recent-computers-list"];
+            if (recentComputers == null)
+                return new string[0];
+
+            return recentComputers.Split('|');
+        }
+
     }
 }
