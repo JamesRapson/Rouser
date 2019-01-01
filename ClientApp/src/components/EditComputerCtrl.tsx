@@ -81,12 +81,11 @@ export class EditComputerCtrl extends React.Component<Rouser.IEditComputerCtrl, 
                     response.text().then(
                         res => this.setState({ errorMessage: res })
                     );
+                    return null;
                 }
-                return response.json();
-            })
-            .then((computer: Rouser.ComputerDetails) => {
-                console.log(computer);
-                this.handleSave(computer);
+                return response.json().then((computer: Rouser.ComputerDetails) => {
+                    this.handleSave(computer);
+                });
             })
             .catch(err => {
                 console.log(err);

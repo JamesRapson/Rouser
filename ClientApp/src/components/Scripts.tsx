@@ -112,11 +112,14 @@ export class Scripts extends React.Component<any, any> {
             dailyWakeTime :sleepTimeOptions[0].value
         };
 
-        for (let hour = 1; hour <= 12; hour++) {
-            sleepTimeOptions.push({ value: `\"${hour}am\"`, label: `${hour}:00 am` });
-        }
-        for (let hour = 1; hour <= 12; hour++) {
-            sleepTimeOptions.push({ value: `\"${hour}pm\"`, label: `${hour}:00 pm` });
+        if (sleepTimeOptions.length === 0) {
+
+            for (let hour = 1; hour <= 12; hour++) {
+                sleepTimeOptions.push({ value: `\"${hour}am\"`, label: `${hour}:00 am` });
+            }
+            for (let hour = 1; hour <= 12; hour++) {
+                sleepTimeOptions.push({ value: `\"${hour}pm\"`, label: `${hour}:00 pm` });
+            }
         }
     }
 
@@ -178,7 +181,7 @@ export class Scripts extends React.Component<any, any> {
                                         id="drpComputerStandby"
                                         onSelect={(val: any) => this.setState({ computerStandby: val })} >
                                         {sleepDurationOptions.map((option) =>
-                                            (<MenuItem key={option.value} eventKey={option.value}>{option.label}</MenuItem>)
+                                            (<MenuItem key={option.value}  eventKey={option.value}>{option.label}</MenuItem>)
                                         )}
                                     </DropdownButton>
                                 </Col>

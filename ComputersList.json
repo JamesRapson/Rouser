@@ -18,41 +18,15 @@
     ]
   },
   {
-    "Id": "de7476d6-a6eb-41df-aecf-7da800ba884c",
-    "Name": "RNTC01",
-    "Description": "fdsfsdfsad",
+    "Id": "b812a35a-0d55-4416-a1d1-99d30ba2559e",
+    "Name": "rrrrrrrrrrrrrrrr",
+    "Description": "fdsaf",
     "User": "",
     "NetworkAdapters": [
       {
-        "MacAddress": "AA-92-1C-F0-DE-29",
-        "Subnet": "8.8.8.8",
-        "IPAddress": "6.6.6.6"
-      }
-    ]
-  },
-  {
-    "Id": "91c105ae-3ded-48f3-bb5a-6214ac299d34",
-    "Name": "222222222333",
-    "Description": "222",
-    "User": "",
-    "NetworkAdapters": [
-      {
-        "MacAddress": "F0-92-1C-F0-DE-40",
-        "Subnet": "5.5.5.5",
+        "MacAddress": "F0-92-1C-F0-DE-44",
+        "Subnet": "5.5.5.6",
         "IPAddress": "1.1.1.1"
-      }
-    ]
-  },
-  {
-    "Id": "8329d545-7cbd-4992-bf70-5fe445339522",
-    "Name": "yyyyyyyyyyyyyyy",
-    "Description": "fdasfasdfasd",
-    "User": "",
-    "NetworkAdapters": [
-      {
-        "MacAddress": "F0-92-BB-F0-DE-29",
-        "Subnet": "1.1.1.1",
-        "IPAddress": "8.8.8.8"
       }
     ]
   }

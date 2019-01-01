@@ -14,8 +14,8 @@ export class ComputerWake extends React.Component<any, any> {
     constructor(props: any) {
         super(props);
 
-        const computersList: Array<Rouser.ComputerDetails> = [];
-        const recentComputersList: Array<Rouser.ComputerDetails> = [];
+        const computersList: Array<Rouser.ComputerDetails> = null;
+        const recentComputersList: Array<Rouser.ComputerDetails> = null;
         const selectedComputers: Array<string> = [];
         const autoOpenRdpFile = CookiesUtility.getOpenRdpFileValue();
 
@@ -26,12 +26,11 @@ export class ComputerWake extends React.Component<any, any> {
             filterStr: "",
             showAddComputerDialog: false,
             editComputer: null,
-            autoOpenRdpFile
+            autoOpenRdpFile,
         };
 
         this.loadRecentComputers();
     }
-
 
     loadComputersList(url: string): Promise<Array<Rouser.ComputerDetails>> {
 
@@ -64,6 +63,7 @@ export class ComputerWake extends React.Component<any, any> {
                     }
                 );
             });
+
     }
 
     loadFilteredComputers(filterStr: string): void {
@@ -129,12 +129,13 @@ export class ComputerWake extends React.Component<any, any> {
 
         CookiesUtility.addRecentComputer(computer.name);
         this.loadRecentComputers();
+        if (this.state.computersList)
+            this.loadFilteredComputers(this.state.filterStr);
     }
 
     onAfterEditComputer(computer: Rouser.ComputerDetails) {
 
         this.showInformationMessage(`Computer ${computer.name} edited`);
-
         this.setState({
             editComputer: false,
         });
@@ -144,14 +145,16 @@ export class ComputerWake extends React.Component<any, any> {
     }
     
     onAfterDeleteComputer(computer: Rouser.ComputerDetails) {
-        this.showInformationMessage(`Computer ${this.state.deleteComputer.name} deleted`);
 
+        this.showInformationMessage(`Computer ${this.state.deleteComputer.name} deleted`);
         CookiesUtility.removeRecentComputer(computer.name);
         this.setState({
             deleteComputer: null
         });
 
         this.loadRecentComputers();
+        if (this.state.computersList)
+            this.loadFilteredComputers(this.state.filterStr);
     }
 
     onCancelCreateEditDeleteComputer() {
@@ -162,11 +165,13 @@ export class ComputerWake extends React.Component<any, any> {
         });
     }
 
-    editComputer(computer: Rouser.ComputerDetails) {
+    editComputer(computer: Rouser.ComputerDetails, event: any) {
+        event.preventDefault();
         this.setState({ editComputer: computer });
     }
 
-    deleteComputer(computer: Rouser.ComputerDetails) {
+    deleteComputer(computer: Rouser.ComputerDetails, event: any) {
+        event.preventDefault();
         this.setState({ deleteComputer: computer });
     }
 
@@ -201,6 +206,10 @@ export class ComputerWake extends React.Component<any, any> {
 
     renderComputersList(computersList: Array<Rouser.ComputerDetails>): JSX.Element {
 
+        if (!computersList) {
+            return null;
+        }
+
         return (
             <table className="computerlist-table">
                 <tbody>
@@ -212,7 +221,7 @@ export class ComputerWake extends React.Component<any, any> {
                                 </Button>
                             </td>
                             <td className="computerlist-nameCol">
-                                <a href="#" onClick={() => this.editComputer(computer)}>
+                                <a href="#" onClick={(event) => this.editComputer(computer, event)}>
                                     {computer.name}
                                 </a>
                             </td>
@@ -226,7 +235,7 @@ export class ComputerWake extends React.Component<any, any> {
                                 IP {computer.networkAdapters[0].ipAddress}
                             </td>
                             <td className="computerlist-buttonCol">
-                                <Button onClick={() => this.deleteComputer(computer)}>
+                                <Button onClick={(event) => this.deleteComputer(computer, event)}>
                                     <Glyphicon glyph="remove"/>
                                 </Button>
                             </td>
@@ -285,7 +294,7 @@ export class ComputerWake extends React.Component<any, any> {
                         </Button>
                         <Checkbox
                             checked={this.state.autoOpenRdpFile}
-                            onClick={(event: any) => this.setOpenRdpFile(event.currentTarget.checked)}
+                            onChange={(event: any) => this.setOpenRdpFile(event.currentTarget.checked)}
                             >
                             Open RDP on Wake
                         </Checkbox>
@@ -298,7 +307,7 @@ export class ComputerWake extends React.Component<any, any> {
                     <Alert bsStyle={this.state.alert.style}>{this.state.alert.message}</Alert>
                 ) : (null)}
 
-                {this.state.recentComputersList.length > 0 ?
+                {this.state.recentComputersList && this.state.recentComputersList.length > 0 ?
                     <div className="recentList-header">
                         <h4>Recent</h4>
                         <a href="#" onClick={() => this.clearRecentComputersList()}
@@ -310,7 +319,6 @@ export class ComputerWake extends React.Component<any, any> {
 
                 {this.renderComputersList(this.state.recentComputersList)}
 
-                <h4>Computers</h4>
                 <div className="filterForm">
                     <Form inline>
                         <FormGroup>
