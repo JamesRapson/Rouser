@@ -2,13 +2,19 @@
 import { Button, ControlLabel, Form, FormControl, FormGroup, Modal, Col, Alert } from "react-bootstrap";
 import * as Rouser from "./RouserTypes";
 
-export class DeleteComputerCtrl extends React.Component<Rouser.IDeleteDialogCtrl, any> {
+interface IState {
+    errorMessage: string;
+    alert: Rouser.Alert;
+}
 
-    constructor(props: Rouser.IDeleteDialogCtrl) {
+export class DeleteComputerCtrl extends React.Component<Rouser.DeleteDialogCtrl, IState> {
+
+    constructor(props: Rouser.DeleteDialogCtrl) {
         super(props);
 
         this.state = {
             errorMessage: null,
+            alert: null
         };
 
         this.handleDelete = this.handleDelete.bind(this);

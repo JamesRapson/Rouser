@@ -1,12 +1,12 @@
 ﻿
-export interface NetworkAdapterDetails {
+export class NetworkAdapterDetails {
     
     macAddress: string;
     subnet?: string;
     ipAddress?: string;
 }
 
-export interface ComputerDetails {
+export class ComputerDetails {
     id?: string;
     name: string;
     description?: string;
@@ -19,17 +19,21 @@ export enum EditComputerCtrlModeEnum {
     Edit
 }
 
-export interface IEditComputerCtrl {
-    mode: EditComputerCtrlModeEnum,
-    computer: ComputerDetails,
-    onSave: Function,
-    onCancel: Function
+export class EditComputerCtrl {
+    mode: EditComputerCtrlModeEnum;
+    computer: ComputerDetails;
+    onSave: Function;
+    onCancel: Function;
 }
 
-export interface IDeleteDialogCtrl {
-    computer: ComputerDetails,
-    onDelete: Function,
-    onCancel: Function
+export class DeleteDialogCtrl {
+    computer: ComputerDetails;
+    onDelete: Function;
+    onCancel: Function;
+}
 
+export class Alert{
+    message: string;
+    style: string;
 }
 

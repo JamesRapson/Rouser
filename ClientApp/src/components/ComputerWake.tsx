@@ -8,26 +8,38 @@ import { CookiesUtility} from "./CookiesUtility"
 import { DeleteComputerCtrl } from "./DeleteComputerCtrl";
 import { EditComputerCtrl } from "./EditComputerCtrl";
 import * as Rouser from "./RouserTypes";
+import { bool } from "prop-types";
+import { FormEvent } from "react";
 
-export class ComputerWake extends React.Component<any, any> {
+interface IState {
+    computersList: Array<Rouser.ComputerDetails>;
+    recentComputersList: Array<Rouser.ComputerDetails>;
+    selectedComputers: Array<string>;
+    filterStr: string;
+    showAddComputerDialog: boolean;
+    editComputer: Rouser.ComputerDetails,
+    deleteComputer: Rouser.ComputerDetails,
+    autoOpenRdpFile: boolean;
+    alert: Rouser.Alert;
+}
+
+export class ComputerWake extends React.Component<any, IState> {
 
     constructor(props: any) {
         super(props);
 
-        const computersList: Array<Rouser.ComputerDetails> = null;
-        const recentComputersList: Array<Rouser.ComputerDetails> = null;
-        const selectedComputers: Array<string> = [];
-        const autoOpenRdpFile = CookiesUtility.getOpenRdpFileValue();
 
         this.state = {
-            computersList,
-            recentComputersList,
-            selectedComputers,
+            computersList: null,
+            recentComputersList: null,
+            selectedComputers: [],
             filterStr: "",
             showAddComputerDialog: false,
             editComputer: null,
-            autoOpenRdpFile,
-        };
+            deleteComputer: null,
+            autoOpenRdpFile: CookiesUtility.getOpenRdpFileValue(),
+            alert: null
+    };
 
         this.loadRecentComputers();
     }
@@ -137,7 +149,7 @@ export class ComputerWake extends React.Component<any, any> {
 
         this.showInformationMessage(`Computer ${computer.name} edited`);
         this.setState({
-            editComputer: false,
+            editComputer: null
         });
 
         CookiesUtility.addRecentComputer(computer.name);
@@ -160,7 +172,7 @@ export class ComputerWake extends React.Component<any, any> {
     onCancelCreateEditDeleteComputer() {
         this.setState({
             showAddComputerDialog: false,
-            editComputer: false,
+            editComputer: null,
             deleteComputer: null
         });
     }
@@ -323,7 +335,7 @@ export class ComputerWake extends React.Component<any, any> {
                     <Form inline>
                         <FormGroup>
                             <FormControl type="text" placeholder="Search" value={this.state.filterStr}
-                                onChange={(event: any) => this.setState({ filterStr: event.currentTarget.value })} />
+                                onChange={(event: any) => this.setState({ filterStr: event.currentTarget.value as any })} />
                         </FormGroup>{" "}
                         <FormGroup>
                             <Button onClick={() => this.loadFilteredComputers(this.state.filterStr)}>

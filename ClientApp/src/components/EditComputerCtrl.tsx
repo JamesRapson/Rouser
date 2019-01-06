@@ -2,21 +2,36 @@
 import { Button, ControlLabel, Form, FormControl, FormGroup, Modal, Col, Alert } from "react-bootstrap";
 import * as Rouser from "./RouserTypes";
 
-export class EditComputerCtrl extends React.Component<Rouser.IEditComputerCtrl, any> {
 
-    constructor(props: Rouser.IEditComputerCtrl) {
+interface IState {
+    errorMessage: string;
+    computerId: string;
+    computerName: string;
+    computerDescription: string;
+    computerUser: string;
+    computerSubnet: string;
+    computerIPAddress: string;
+    computerMACAddress: string;
+    mode: Rouser.EditComputerCtrlModeEnum;
+}
+
+export class EditComputerCtrl extends React.Component<Rouser.EditComputerCtrl, IState> {
+
+    constructor(props: Rouser.EditComputerCtrl) {
         super(props);
 
         if (props.mode === Rouser.EditComputerCtrlModeEnum.Edit) {
 
             this.state = {
+                errorMessage: null,
                 computerId: props.computer.id,
                 computerName: props.computer.name,
                 computerDescription: props.computer.description,
-                computerUser: props.computer.user,
                 computerSubnet: props.computer.networkAdapters[0].subnet,
                 computerIPAddress: props.computer.networkAdapters[0].ipAddress,
                 computerMACAddress: props.computer.networkAdapters[0].macAddress,
+                computerUser: props.computer.user,
+                mode: Rouser.EditComputerCtrlModeEnum.Create
             };
 
         } else {
@@ -118,35 +133,35 @@ export class EditComputerCtrl extends React.Component<Rouser.IEditComputerCtrl, 
                                 <Col sm={3}>Name : </Col>
                                 <Col sm={9}>
                                     <FormControl type="text" placeholder="Name" value={this.state.computerName}
-                                        onChange={(event :any) => this.setState({ computerName: event.currentTarget.value })} />
+                                        onChange={(event: any) => this.setState({ computerName: event.currentTarget.value as any })} />
                                 </Col>
                             </FormGroup>
                             <FormGroup>
                                 <Col sm={3}>Description : </Col>
                                 <Col sm={9}>
                                     <FormControl type="text" placeholder="Description" value={this.state.computerDescription}
-                                        onChange={(event: any) => this.setState({ computerDescription: event.currentTarget.value })} />
+                                        onChange={(event: any) => this.setState({ computerDescription: event.currentTarget.value as any })} />
                                 </Col>
                             </FormGroup>
                             <FormGroup>
                                 <Col sm={3}>IP Address : </Col>
                                 <Col sm={9}>
                                     <FormControl type="text" placeholder="IP Address" value={this.state.computerIPAddress}
-                                        onChange={(event: any) => this.setState({ computerIPAddress: event.currentTarget.value })} />
+                                        onChange={(event: any) => this.setState({ computerIPAddress: event.currentTarget.value as any })} />
                                 </Col>
                             </FormGroup>
                             <FormGroup>
                                 <Col sm={3}>MAC Address : </Col>
                                 <Col sm={9}>
                                     <FormControl type="text" placeholder="MAC Address" value={this.state.computerMACAddress}
-                                        onChange={(event: any) => this.setState({ computerMACAddress: event.currentTarget.value })} />
+                                        onChange={(event: any) => this.setState({ computerMACAddress: event.currentTarget.value as any })} />
                                 </Col>
                             </FormGroup>
                             <FormGroup>
                                 <Col sm={3}>Subnet Mask : </Col>
                                 <Col sm={9}>
                                     <FormControl type="text" placeholder="Subnet Mask" value={this.state.computerSubnet}
-                                        onChange={(event: any) => this.setState({ computerSubnet: event.currentTarget.value })} />
+                                        onChange={(event: any) => this.setState({ computerSubnet: event.currentTarget.value as any })} />
                                 </Col>
                             </FormGroup>
                         </Form>

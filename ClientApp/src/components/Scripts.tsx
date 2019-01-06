@@ -92,9 +92,7 @@ const sleepDurationOptions: DropdownOption[] = [
     { value: 240, label: "4 hrs" }
 ];
 
-let sleepTimeOptions: DropdownOption[] = [
-    { value: "$null", label: "never" }
-];
+let sleepTimeOptions: DropdownOption[] = [];
 
 
 export class Scripts extends React.Component<any, any> {
@@ -105,14 +103,9 @@ export class Scripts extends React.Component<any, any> {
     constructor(props: any) {
         super(props);
 
-        this.state = {
-            monitorStandby: 60,
-            computerStandby: 120,
-            dailySleepTime: sleepTimeOptions[0].value,
-            dailyWakeTime :sleepTimeOptions[0].value
-        };
-
         if (sleepTimeOptions.length === 0) {
+
+            sleepTimeOptions.push({ value: "$null", label: "never" });
 
             for (let hour = 1; hour <= 12; hour++) {
                 sleepTimeOptions.push({ value: `\"${hour}am\"`, label: `${hour}:00 am` });
@@ -121,6 +114,14 @@ export class Scripts extends React.Component<any, any> {
                 sleepTimeOptions.push({ value: `\"${hour}pm\"`, label: `${hour}:00 pm` });
             }
         }
+
+        this.state = {
+            monitorStandby: 60,
+            computerStandby: 120,
+            dailySleepTime: sleepTimeOptions[0].value,
+            dailyWakeTime :sleepTimeOptions[0].value
+        };
+        
     }
 
     copyAddComputerScriptToClipboard(): void {
