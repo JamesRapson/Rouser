@@ -76,6 +76,16 @@ if ($dailyWakeTime -ne $null) {
     $settings = New-ScheduledTaskSettingsSet -WakeToRun:$true -AllowStartIfOnBatteries:$false
     Register-ScheduledTask -Action $action -Trigger $trigger -TaskName $wakeComputerTaskName -Description "Wakes computer" -Settings $settings
 }
+
+### Enable Keyboard wakeup ###
+$output = (powercfg /devicequery wake_programmable)
+$lines = $output | where {$_ -match 'keyboard'}
+
+foreach ($line in $lines) {
+
+    Write-Host "Enabling wakeup for '$line'"
+    & powercfg /deviceenablewake $line
+}
 `;
 
 interface DropdownOption {
