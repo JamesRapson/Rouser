@@ -12,9 +12,11 @@ This allows you to set power schemes on your computers that put them into a low 
 
 The website provides a script to easily populate the web server with the information it requires to send WOL packets to a computer. This script can be run manually or as part of a domain wide login script. It also alows you to create a script that will set a computer's power scheme based on your preferences and can create a scheduled task to put the computer into sleep mode at a desired time.
 
-The ultimate aim is to save energy/power, CO2 and money in the running of your desktop fleet by making it very easy for a user to wake and remotely connect to their computer whenever they wish to, hence removing one of the inconveniences of using power schemes. Putting computer to sleep when not in use should be a no-brainer however the problem of being able to wake them when required can mean that this is not possible.
+The ultimate aim is to save energy/power, CO2 and money in the running of your desktop fleet by making it very easy for a user to wake and remotely connect to their computer whenever they wish to, hence removing one of the inconveniences of using power schemes. 
 
-I have installed this website within our corporate netweek on a computer that always need to remain on. When I or anyone else needs to remote into their computer from home we simply connect to our corporate VPN in the usual way and then open the website and wake our computer. It seems to work very well and I have never had a situation where I have been unable to wake my computer when needed.
+I have installed this website within our corporate network on a computer that always need to remains (for other reason). When I, or anyone else needs to remotely connect to their computer from home we simply connect to our corporate VPN in the usual way, and then open the website and wake our computer. It has performed very well to date and I have never had a situation where I have been unable to wake my computer when needed.
+
+Unfortunately this website can not be offered as SaaS as the website needs to be hosted within your corporate environment because the WOL packets are not internet routable. 
 
 ## Technical Details
 This is a ASP.NET Core project with a SPA style client application using Typescript
