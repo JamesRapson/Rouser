@@ -1,6 +1,6 @@
 # Rouser - Computer Wakeup Web Server.
 
-This project is a web server that allows you to remoting wake a sleeping computer by sending it a WOL Magic Packet.
+This project is a web server that allows you to remotely wake a sleeping computer by sending it a WOL Magic Packet.
 The primary purpose of this project is to allow desktop computers within a corporate environment to go into low power mode and still have a way to remotely wake these computers when a user needs to remotely connect to them.
 
 In the office where I work, we have many desktop computers that staff use in their daily work. 
@@ -10,10 +10,11 @@ For staff to remotely connect to their computers these computers need to be awak
 The Rouser Web Server enables users to wake their computers from a sleep or hibernate mode using a web page that they can access once connected to the corporate VPN. 
 This allows you to set power schemes on your computers that put them into a low power mode when not in use, saving you energy, CO2 emissions and money.
 
-The website provides a script to easily populate the web server with the information it requires to send WOL packets to a computer. This script can be run manually or as part of a domain wide login script.
-The website also provides a script that will set a computer's power scheme and can create a scheduled task to put the computer into sleep mode at a specified time
+The website provides a script to easily populate the web server with the information it requires to send WOL packets to a computer. This script can be run manually or as part of a domain wide login script. It also alows you to create a script that will set a computer's power scheme based on your preferences and can create a scheduled task to put the computer into sleep mode at a desired time.
 
-The ultimate aim is to save energy/power, CO2 and money in the running of your desktop fleet by making it very easy for a user to wake and remotely connect to their computer whenever they wish to, hence removing one of the inconveniences of using power schemes.
+The ultimate aim is to save energy/power, CO2 and money in the running of your desktop fleet by making it very easy for a user to wake and remotely connect to their computer whenever they wish to, hence removing one of the inconveniences of using power schemes. Putting computer to sleep when not in use should be a no-brainer however the problem of being able to wake them when required can mean that this is not possible.
+
+I have installed this website within our corporate netweek on a computer that always need to remain on. When I or anyone else needs to remote into their computer from home we simply connect to our corporate VPN in the usual way and then open the website and wake our computer. It seems to work very well and I have never had a situation where I have been unable to wake my computer when needed.
 
 ## Technical Details
 This is a ASP.NET Core project with a SPA style client application using Typescript
